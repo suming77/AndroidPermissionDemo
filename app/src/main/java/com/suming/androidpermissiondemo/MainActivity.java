@@ -11,11 +11,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
 /**
  * @创建者 mingyan.su
  * @创建时间 2018/10/23 16:05
  * @类描述 ${TODO}权限工具类
  * 注意：没有做小米，vivo手机等权限处理
+ * 我的博客地址：https://blog.csdn.net/m0_37796683
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -25,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.btn_normal).setOnClickListener(this);
-        findViewById(R.id.btn_single).setOnClickListener(this);
         findViewById(R.id.btn_more).setOnClickListener(this);
     }
 
@@ -35,11 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_normal://封装前
                 showAfterPermission();
                 break;
-            case R.id.btn_single://封装后-单个权限
-
-                break;
             case R.id.btn_more://封装后-多个权限
-
+                startActivity(new Intent(this, MorePermissionActivity.class));
                 break;
             default:
                 break;

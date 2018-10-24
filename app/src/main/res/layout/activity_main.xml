@@ -12,16 +12,12 @@
         android:layout_height="wrap_content"
         android:text="普通"/>
 
-    <Button
-        android:id="@+id/btn_single"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="单个权限"/>
 
     <Button
         android:id="@+id/btn_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="多个权限"/>
+        android:layout_marginTop="40dp"
+        android:text="封装"/>
 
 </LinearLayout>
