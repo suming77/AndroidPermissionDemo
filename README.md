@@ -1,6 +1,6 @@
 ## AndroidPermissionDemo
 6.0权限申请demo详解，包括单个和多个权限的申请，权限工具类的封装。
-![image](https://github.com/FollowExcellence/RecyclerView_Gallery/blob/master/GIF.gif)
+![image]()
 
 ## Use
 1.MorePermissionActivity.calss 在activity设置
@@ -14,6 +14,7 @@
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionUtil.onRequestPermissionsResult(this, requestCode, permissions, grantResults, this);
     }
+    
  C.实现三个方法：
     @Override
     public void requestPermissionSuccess() {
@@ -31,4 +32,4 @@
 ```
 
 ## APK下载
-"点击下载"[APK](https://github.com/FollowExcellence/RecyclerView_Gallery/raw/master/app-debug.apk) 
+"点击下载"[APK](https://github.com/FollowExcellence/AndroidPermissionDemo/blob/master/app/app-debug.apk) 
