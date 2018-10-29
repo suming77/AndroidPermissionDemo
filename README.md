@@ -1,5 +1,5 @@
 ## AndroidPermissionDemo
-6.0权限申请demo详解，包括单个和多个权限的申请，权限工具类的封装。
+6.0权限申请demo详解，包括单个和多个权限的申请，权限工具类的封装，BaseActivity的封装。
 ![image](https://github.com/FollowExcellence/AndroidPermissionDemo/blob/master/GIF.gif)
 
 ## Use
