@@ -8,14 +8,14 @@
  A.在你需要的地方设置：
  PermissionUtil.checkPermission(this, permissions, REQUEST_CODE_MORE, this);
  
- B.在回调的地放设置：
+ B.重写权限请求回调：
   @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionUtil.onRequestPermissionsResult(this, requestCode, permissions, grantResults, this);
     }
     
- C.实现三个方法：
+ C.实现回调方法：
     @Override
     public void granted() {
         Toast.makeText(this, "获取权限成功，执行正常操作", Toast.LENGTH_LONG).show();
