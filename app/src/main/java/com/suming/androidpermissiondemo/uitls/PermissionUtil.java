@@ -1,6 +1,7 @@
-package com.suming.androidpermissiondemo;
+package com.suming.androidpermissiondemo.uitls;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -8,7 +9,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-
+import android.support.v7.app.AlertDialog;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,9 @@ import java.util.List;
  * 没有做小米，vivo手机权限处理
  */
 public class PermissionUtil {
+
+    private static StringBuilder sPermissionNames;//提示框显示的权限名称
+
     /**
      * 检测权限
      *
@@ -27,7 +31,7 @@ public class PermissionUtil {
      * @param requestCode //请求码
      */
     public static void checkPermission(final Activity activity, final String[] permissions,
-                                       final int requestCode, permissionInterface permissionInterface) {
+                                       final int requestCode, RequestPermissionCallBack permissionInterface) {
         List<String> deniedPermissions = findDeniedPermissions(activity, permissions);
         if (deniedPermissions != null && deniedPermissions.size() > 0) {
             //大于0,表示有需要的权限但没有申请
@@ -35,7 +39,7 @@ public class PermissionUtil {
                     deniedPermissions.toArray(new String[deniedPermissions.size()]), requestCode);
         } else {
             //已经拥有权限
-            permissionInterface.requestPermissionSuccess();
+            permissionInterface.granted();
         }
     }
 
@@ -44,12 +48,23 @@ public class PermissionUtil {
      */
     public static void requestContactsPermissions(final Activity activity, final String[] permissions,
                                                   final int requestCode) {
-        //默认是false,但是只要请求过一次权限就会为true,除非点了不再询问才会重新变为false
+        //第一次默认返回false,如果点击了禁止授权(没勾选不在提示)则返回true,可以直接提示重新获取权限框
+        // 如果点击了禁止授权，并且勾选了不再提示框则返回false，这种情况可以留到回调再处理
         if (shouldShowPermissions(activity, permissions)) {//不在访问权限，直接跳转到设置权限页面
-//            ActivityCompat.requestPermissions(activity, permissions, requestCode);
-            startApplicationDetailsSettings(activity, requestCode);
+            new AlertDialog.Builder(activity)
+                    .setMessage("【用户曾经拒绝过你的请求，所以这次发起请求时解释一下】\r\n" +
+                            "您好，需要如下权限：\r\n" +
+                            sPermissionNames +
+                            " 请允许，否则将影响部分功能的正常使用。")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(activity, permissions, requestCode);
+                        }
+                    }).show();
         } else {
-            // 无需向用户界面提示，直接请求权限,如果用户点了不再询问,即使调用请求权限也不会出现请求权限的对话框
+            //直接请求权限
+            //如果用户点了不再询问,即使调用请求权限也不会出现请求权限的对话框，可以在回调中处理
             ActivityCompat.requestPermissions(activity, permissions, requestCode);
         }
     }
@@ -102,9 +117,10 @@ public class PermissionUtil {
      * @param permission
      * @return 是否需要提示
      */
-    public static boolean shouldShowPermissions(Activity activity, String... permission) {
+    public static boolean shouldShowPermissions(final Activity activity, String... permission) {
+        sPermissionNames = new StringBuilder();
         for (String value : permission) {
-            //请求前勾选不在提示，返回false
+            sPermissionNames = sPermissionNames.append(value + "\r\n");
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, value)) {
                 return true;
             }
@@ -115,34 +131,51 @@ public class PermissionUtil {
     /**
      * 申请权限返回方法
      */
-    public static void onRequestPermissionsResult(Activity activity, int requestCode, @NonNull String[] permissions,
-                                                  @NonNull int[] grantResults, permissionInterface permissionInterface) {
+    public static void onRequestPermissionsResult(final Activity activity, final int requestCode, @NonNull String[] permissions,
+                                                  @NonNull int[] grantResults, final RequestPermissionCallBack permissionInterface) {
         if (PermissionUtil.verifyPermissions(grantResults)) {//允许权限，有权限
             if (permissionInterface != null) {
-                permissionInterface.requestPermissionSuccess();
+                permissionInterface.granted();
             }
         } else {
             //拒绝了权限，没有权限
-            //当用户之前已经请求过该权限并且拒绝了授权这个方法返回true 表示没有勾选了不再提示，false表示禁止了权限并且勾选了不再提示
+            //第一次默认返回false,当用户之前已经请求过该权限并且拒绝了授权但没有勾选了不再提示返回true，false表示禁止了权限并且勾选了不再提示
             if (PermissionUtil.shouldShowPermissions(activity, permissions)) {
+                //用户拒绝权限请求，但未选中“不再提示”选项
                 if (permissionInterface != null) {
-                    permissionInterface.requestPermissionRefuse();
+                    permissionInterface.denied();
                 }
             } else {
-                //并且勾选了不再提示
-                if (permissionInterface != null) {
-                    permissionInterface.requestPermissionRefuseAndNoTips();
-                }
+                //用户拒绝权限请求，并且勾选了不再提示
+                new AlertDialog.Builder(activity)
+                        .setMessage("【用户选择了不在提示按钮，或者系统默认不在提示（如MIUI）。" +
+                                "引导用户到应用设置页去手动授权,注意提示用户具体需要哪些权限】\r\n" +
+                                "获取相关权限失败:\r\n" +
+                                sPermissionNames +
+                                "将导致部分功能无法正常使用，需要到设置页面手动授权")
+                        .setPositiveButton("去授权", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startApplicationDetailsSettings(activity, requestCode);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (permissionInterface != null) {
+                                    permissionInterface.denied();
+                                }
+                            }
+                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        if (permissionInterface != null) {
+                            permissionInterface.denied();
+                        }
+                    }
+                }).show();
             }
         }
-
-        //单个权限
-//        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-////            showToast("权限已申请");
-//        } else {
-////            showToast("权限已拒绝");
-//        }
-
     }
 
     /**
@@ -159,12 +192,19 @@ public class PermissionUtil {
         activity.startActivityForResult(intent, requestCode);
     }
 
-    //回调接口
-    public interface permissionInterface {
-        void requestPermissionSuccess();//请求权限成功
 
-        void requestPermissionRefuse();//拒绝权限
+    /**
+     * 权限请求结果回调接口
+     */
+    public interface RequestPermissionCallBack {
+        /**
+         * 同意授权
+         */
+        public void granted();
 
-        void requestPermissionRefuseAndNoTips();//拒绝权限并不在提示
+        /**
+         * 取消授权
+         */
+        public void denied();
     }
 }

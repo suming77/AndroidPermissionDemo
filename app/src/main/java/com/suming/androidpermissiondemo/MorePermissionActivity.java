@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
+
+import com.suming.androidpermissiondemo.uitls.PermissionUtil;
 
 /**
  * @创建者 mingyan.su
@@ -13,8 +16,8 @@ import android.view.View;
  * 注意：没有做小米，vivo手机等权限处理
  * 我的博客地址：https://blog.csdn.net/m0_37796683
  */
-public class MorePermissionActivity extends AppCompatActivity implements View.OnClickListener, PermissionUtil.permissionInterface {
-
+public class MorePermissionActivity extends AppCompatActivity implements View.OnClickListener,
+        PermissionUtil.RequestPermissionCallBack {
     private int REQUEST_CODE_ONE = 10001;
     private int REQUEST_CODE_MORE = 10002;
 
@@ -25,7 +28,7 @@ public class MorePermissionActivity extends AppCompatActivity implements View.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_more);
+        setContentView(R.layout.activity_uitls);
 
         findViewById(R.id.btn_single).setOnClickListener(this);
         findViewById(R.id.btn_more).setOnClickListener(this);
@@ -66,17 +69,12 @@ public class MorePermissionActivity extends AppCompatActivity implements View.On
     }
 
     @Override
-    public void requestPermissionSuccess() {
-        System.out.println("做需要使用到权限的事情");
+    public void granted() {
+        Toast.makeText(this, "获取权限成功，执行正常操作", Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void requestPermissionRefuse() {
-        System.out.println("提示用户，禁止了权限，没有勾选不再提示框");
-    }
-
-    @Override
-    public void requestPermissionRefuseAndNoTips() {
-        System.out.println("提示用户，禁止了权限，并且勾选了不在提示框");
+    public void denied() {
+        Toast.makeText(this, "获取权限失败，正常功能受到影", Toast.LENGTH_LONG).show();
     }
 }

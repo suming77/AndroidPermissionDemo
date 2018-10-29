@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <LinearLayout
@@ -24,24 +23,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="permission工具类的使用"
+            android:text="Base类的使用"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"/>
     </LinearLayout>
-
 
     <Button
         android:id="@+id/btn_single"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:text="单个权限"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:text="单个权限申请-Base"/>
 
     <Button
-        android:id="@+id/btn_more"
+        android:id="@+id/btn_multi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="多个权限"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:text="多个权限申请-Base"/>
 
 </LinearLayout>

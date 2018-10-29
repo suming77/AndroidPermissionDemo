@@ -24,6 +24,7 @@
         </activity>
 
         <activity android:name=".MorePermissionActivity"/>
+        <activity android:name=".UseBaseActivity"/>
     </application>
 
 </manifest>
