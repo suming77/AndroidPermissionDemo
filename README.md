@@ -17,16 +17,13 @@
     
  C.实现三个方法：
     @Override
-    public void requestPermissionSuccess() {
-        System.out.println("做需要使用到权限的事情");
+    public void granted() {
+        Toast.makeText(this, "获取权限成功，执行正常操作", Toast.LENGTH_LONG).show();
     }
+
     @Override
-    public void requestPermissionRefuse() {
-        System.out.println("提示用户，禁止了权限，没有勾选不再提示框");
-    }
-    @Override
-    public void requestPermissionRefuseAndNoTips() {
-        System.out.println("提示用户，禁止了权限，并且勾选了不在提示框");
+    public void denied() {
+        Toast.makeText(this, "获取权限失败，正常功能受到影", Toast.LENGTH_LONG).show();
     }
  
 ```
